@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Guransh Dua</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <!-- update the version number as needed -->
+    <script defer src="/__/firebase/6.5.0/firebase-app.js"></script>
+    <!-- include only the Firebase features as you need -->
+    <script defer src="/__/firebase/6.5.0/firebase-auth.js"></script>
+    <script defer src="/__/firebase/6.5.0/firebase-database.js"></script>
+    <script defer src="/__/firebase/6.5.0/firebase-messaging.js"></script>
+    <script defer src="/__/firebase/6.5.0/firebase-storage.js"></script>
+    <!-- initialize the SDK after all desired features are loaded -->
+    <script defer src="/__/firebase/init.js"></script>
+    <script>
+
+    function preload()
+    {
+      console.log("aaya")
+      firebase.auth().onAuthStateChanged(function(user)
+      {
+        if(user)
+        {
+
+        }
+        else {
+          location.href="./index.html";
+        }
+
+        if(user.emailVerified==false)
+        {
+            user.sendEmailVerification().then(function() {
+            console.log("Email sent");
+        }).catch(function(error) {
+        // An error happened.
+        });
+        }
+        else {
+          console.log("User already Verified")
+        }
+      })
+    }
+
+    window.onload=function()
+    {
+      initApp();
+    }
+  </script>
+  </head>
+  <body onload="preload()">
+    <div class="container">
+
+        <button onclick="signOut()">Sign Out</button>
+
+    </div>
+
+    <script src="app.js">
+
+    </script>
+
+  </body>
+</html>
