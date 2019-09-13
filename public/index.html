@@ -1,110 +1,101 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <script>
-
-    </script>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Guransh Dua</title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
-    <!-- update the version number as needed -->
+    <!--Firebase Modules-->
     <script defer src="/__/firebase/6.5.0/firebase-app.js"></script>
-    <!-- include only the Firebase features as you need -->
     <script defer src="/__/firebase/6.5.0/firebase-auth.js"></script>
     <script defer src="/__/firebase/6.5.0/firebase-database.js"></script>
-    <script defer src="/__/firebase/6.5.0/firebase-messaging.js"></script>
-    <script defer src="/__/firebase/6.5.0/firebase-storage.js"></script>
-    <!-- initialize the SDK after all desired features are loaded -->
     <script defer src="/__/firebase/init.js"></script>
-    <script src="app.js">
+    <!--Custom made Javascript-->
+    <script defer type="text/javascript" src="app.js"></script>
 
-    </script>
     <script>
-
-    function signupwithmail()
-    {
-      var mail=document.getElementById('mail').value;
-      var pwd=document.getElementById('pwd').value;
-      console.log("HIII");
-      firebase.auth().createUserWithEmailAndPassword(mail, pwd).catch(function(error) {
-        // Handle Errors here.
-        var errorCode = error.code;
-        var errorMessage = error.message;
-        // ...
-      });
-    }
-    function signinwithmail()
-    {
-      var mail=document.getElementById('mailin').value;
-      var pwd=document.getElementById('pwdin').value;
-      console.log("IN");
-      firebase.auth().signInWithEmailAndPassword(mail, pwd).catch(function(error) {
-        // Handle Errors here.
-        var errorCode = error.code;
-        var errorMessage = error.message;
-        // ...
-      });
-      console.log(firebase.auth().currentUser);
-    }
-    function preload()
-    {
-      firebase.auth().onAuthStateChanged(function(user)
+    //Function to Sign Up using Mail and Password
+      function signupwithmail()
       {
-        if(user)
-        {
-          location.href="./dash.html";
-        }
-        else {
-
-        }
-
-        if(user.emailVerified==false)
-        {
-            user.sendEmailVerification().then(function() {
-            console.log("Email sent");
+        console.log("Inside Sign Up")
+        var mail=document.getElementById('mail').value;
+        var pwd=document.getElementById('pwd').value;
+        //Firebase Function to Create new user using Mail and Password
+        firebase.auth().createUserWithEmailAndPassword(mail, pwd).then(function(){
+          document.getElementById('pwd').value=NULL;
+          document.getElementById('mail').value=NULL;
         }).catch(function(error) {
-        // An error happened.
+          // Handle Errors here.
+          var errorCode = error.code;
+          var errorMessage = error.message;
+          // ...
         });
-        }
-        else {
-          console.log("User already Verified")
-        }
-      })
-    }
+      }
 
+      function signinwithmail()
+      {
+        //Function to Sign In using Mail and Password
+        console.log("Inside Sign In")
+        var mail=document.getElementById('mailin').value;
+        var pwd=document.getElementById('pwdin').value;
+        //Firebase Function to Sign In user using Mail and Password
+        firebase.auth().signInWithEmailAndPassword(mail, pwd).catch(function(error) {
+          // Handle Errors here.
+          var errorCode = error.code;
+          var errorMessage = error.message;
+          // ...
+        });
+      }
 
-  </script>
-
-  </head>
-  <body onload="preload()">
-    <script>
-      preload();
+      function preload()
+      {
+        //Function to check if user is logged In.
+        console.log("Inside Preload")
+        firebase.auth().onAuthStateChanged(function(user)
+        {
+          if(user)
+          {
+            //To check if user's email is verified
+            if(user.emailVerified==false)
+            {
+              //Sending verification Email if not Verified.
+                user.sendEmailVerification().then(function() {
+                document.write("Please Verify your Email. Verification Email sent. <br /><br /><button onclick='location.href=\"./index.html\"'>Back </button>");
+            }).catch(function(error) {
+            // An error happened.
+            });
+            }
+            else {
+              //Redirecting to dashboard if Email is Verified
+              location.href="./dash.html";
+            }
+          }
+        })
+      }
     </script>
-    <div class="container">
-      <h1>Sign Up</h1>
+  </head>
+<!--Body Starts-->
+  <body onload="preload()">
+    <div>
+        <!--Sign Up Form-->
+        <h1>Sign Up</h1>
         <input type="email" name="mail" id="mail"/>
         <input type="password" name="pwd" id="pwd"/>
         <button onclick="signupwithmail()">Submit</button>
-
         <br />
+        <!--Sign in Form-->
         <h1>Sign In</h1>
           <input type="email" name="mail" id="mailin"/>
           <input type="password" name="pwd" id="pwdin"/>
           <button onclick="signinwithmail()">Submit</button>
         <br />
         <br />
+        <!--Google Login-->
         <button onclick="googleLogin()">Login with Google!</button>
         <br />
         <br />
-        <button onclick="signOut()">Sign Out</button>
-        <br />
-        <br />
+        <!--Password Reset-->
         <input type="email" name="mailreset" id="mailreset" />
         <button onclick="passwordReset()">Reset Password</button>
     </div>
-
-
-
   </body>
 </html>

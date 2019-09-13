@@ -4,61 +4,87 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Guransh Dua</title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
-    <!-- update the version number as needed -->
+    <!--Firebase Modules-->
     <script defer src="/__/firebase/6.5.0/firebase-app.js"></script>
-    <!-- include only the Firebase features as you need -->
     <script defer src="/__/firebase/6.5.0/firebase-auth.js"></script>
     <script defer src="/__/firebase/6.5.0/firebase-database.js"></script>
-    <script defer src="/__/firebase/6.5.0/firebase-messaging.js"></script>
-    <script defer src="/__/firebase/6.5.0/firebase-storage.js"></script>
-    <!-- initialize the SDK after all desired features are loaded -->
     <script defer src="/__/firebase/init.js"></script>
+    <!--Custom made Javascript-->
+    <script defer type="text/javascript" src="app.js"></script>
+
     <script>
-
-    function preload()
-    {
-      console.log("aaya")
-      firebase.auth().onAuthStateChanged(function(user)
+    //Function to Check Authentication
+      function preload()
       {
-        if(user)
+        firebase.auth().onAuthStateChanged(function(user)
         {
-
+          if(user)
+          {
+            if(user.emailVerified==false)
+            {
+                user.sendEmailVerification().then(function() {
+            }).catch(function(error) {
+            // An error happened.
+            });
+            signOut();
+            }
+          }
+          else {
+            location.href="./index.html";
+          }
+        })
+      }
+      //Function to Insert Data into Database
+      function insertData()
+      {
+        var userId=document.getElementById('uid').value;
+        var name=document.getElementById('Name').value;
+        var imageUrl=document.getElementById('Url').value;
+        var email=document.getElementById('email').value;
+        console.log(userId+" "+name+" "+imageUrl+" "+email)
+        function writeUserData(userId, name, email, imageUrl) {
+          firebase.database().ref('users/' + userId).set({
+            username: name,
+            email: email,
+            profile_picture : imageUrl
+          });
         }
-        else {
-          location.href="./index.html";
-        }
+        writeUserData(userId,name,email,imageUrl)
+      }
+      //Function to View Data from Database
+      function retrieveData()
+      {
+        var rid=document.getElementById('rid').value;
+        return firebase.database().ref('/users/' + rid).once('value').then(function(snapshot) {
+          var username = (snapshot.val() && snapshot.val().username);
+          var profile = (snapshot.val() && snapshot.val().profile_picture);
+          var email = (snapshot.val() && snapshot.val().email);
+          document.write("Username: "+username+"<br />Profile Picture URL: "+profile+"<br />Email ID: "+email+"<br /><br /><button onclick='location.href=\"./dash.html\"'>Back</button>");
 
-        if(user.emailVerified==false)
-        {
-            user.sendEmailVerification().then(function() {
-            console.log("Email sent");
-        }).catch(function(error) {
-        // An error happened.
+          // ...
         });
-        }
-        else {
-          console.log("User already Verified")
-        }
-      })
-    }
 
-    window.onload=function()
-    {
-      initApp();
-    }
-  </script>
-  </head>
-  <body onload="preload()">
-    <div class="container">
-
-        <button onclick="signOut()">Sign Out</button>
-
-    </div>
-
-    <script src="app.js">
-
+      }
     </script>
-
-  </body>
+  </head>
+<!--Body Starts-->
+  <body onload="preload()">
+    <div>
+        <!--Sign Out Button-->
+        <button onclick="signOut()">Sign Out</button>
+        <br /><br />
+        <!--Data Creation Form-->
+        <h2>Add Data</h2>
+        <input type="text" id="uid" placeholder="Enter ID" />
+        <input type="text" id="Name" placeholder="Enter Name" />
+        <input type="text" id="Url" placeholder="Enter Profile URL" />
+        <input type="email" id="email" placeholder="Enter Email" />
+        <button onclick="insertData()">Upload</button>
+        <br /><br />
+        <!--Data Retrieval Form-->
+        <h2>Retrieve Data</h2>
+        <input type="text" id="rid" placeholder="Enter Id" />
+        <button onclick="retrieveData()">Retrieve by ID</button>
+    </div>
+    </body>
 </html>
